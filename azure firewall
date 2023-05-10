@@ -17,4 +17,21 @@ resource "azurerm_firewall" "this" {
 
   tags = local.fw_tags
 }
+resource "azurerm_firewall_network_rule_collection" "this" {
+  for_each            = var.firewallrules
+  name                = each.key
+  azure_firewall_name = azurerm_firewall.this.name
+  resource_group_name = var.resource_group_name
+  priority            = lookup(each.value, "priority")
+  action              = lookup(each.value, "action")
+
+  rule {
+    name                  = lookup(each.value, "rulename")
+    source_addresses      = lookup(each.value, "source_addresses")
+    destination_ports     = lookup(each.value, "destination_ports")
+    destination_addresses = lookup(each.value, "destination_addresses")
+    protocols             = lookup(each.value, "protocols")
+  }
+}
+
 
