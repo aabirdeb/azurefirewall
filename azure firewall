@@ -33,5 +33,24 @@ resource "azurerm_firewall_network_rule_collection" "this" {
     protocols             = lookup(each.value, "protocols")
   }
 }
+resource "azurerm_firewall_application_rule_collection" "this" {
+  for_each            = var.firewallapprules
+  name                = each.key
+  azure_firewall_name = azurerm_firewall.this.name
+  resource_group_name = var.resource_group_name
+  priority            = lookup(each.value, "priority")
+  action              = lookup(each.value, "action")
 
+  rule {
+    name             = lookup(each.value, "rulename")
+    source_addresses = lookup(each.value, "source_addresses")
+    target_fqdns     = lookup(each.value, "target_fqdns")
+    protocol {
+      port = lookup(each.value, "protocolport")
+      type = lookup(each.value, "protocoltype")
+
+    }
+
+  }
+}
 
